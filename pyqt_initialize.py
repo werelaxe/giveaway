@@ -31,7 +31,7 @@ class Example(QWidget):
         x_coord = event.pos().x() // self.factor
         y_coord = event.pos().y() // self.factor
         self.game.click(x_coord, y_coord)
-        print(self.game.current_player)
+        print('Current player: {}'.format(self.game.current_player))
         self.update()
 
     def paintEvent(self, event):

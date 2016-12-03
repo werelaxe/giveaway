@@ -4,6 +4,16 @@ LEFT_PLAYER = 2
 TOP_PLAYER = 3
 RIGHT_PLAYER = 4
 
+RIGHT_DIRS = [0] * 5
+RIGHT_DIRS[BOTTOM_PLAYER] = [(1, -1), (-1, -1)]
+RIGHT_DIRS[LEFT_PLAYER] = [(1, 1), (1, -1)]
+RIGHT_DIRS[TOP_PLAYER] = [(1, 1), (-1, 1)]
+RIGHT_DIRS[RIGHT_PLAYER] = [(-1, 1), (-1, -1)]
+
+
+def check_direction(player, direction):
+    return direction in RIGHT_DIRS[player]
+
 
 def get_start_player(coord_x, coord_y, field_size):
     if (coord_x + coord_y) % 2:
@@ -26,6 +36,7 @@ class Field:
     def __init__(self, size):
         self.cells = []
         self.size = size
+        self.cut_exists = False
         for indy in range(size):
             self.cells.append([])
             for indx in range(size):
@@ -55,42 +66,14 @@ class Field:
             return False
         return True
 
-    def is_correct_step(self, player, start_cell, final_cell):
+    def get_selected_cells(self, player, start_cell):
         start_x, start_y = start_cell
-        final_x, final_y = final_cell
-        if not self.is_inside(final_cell):
-            return False
-        if self.cells[final_y][final_x]:
-            return False
-        if player == BOTTOM_PLAYER:
-            if start_y - final_y != 1:
-                return False
-            return abs(start_x - final_x) == 1
-        if player == LEFT_PLAYER:
-            if final_x - start_x != 1:
-                return False
-            return abs(start_y - final_y) == 1
-        if player == TOP_PLAYER:
-            if final_y - start_y != 1:
-                return False
-            return abs(start_x - final_x) == 1
-        if player == RIGHT_PLAYER:
-            if start_x - final_x != 1:
-                return False
-            return abs(start_y - final_y) == 1
-        raise ValueError
-
-    def get_selected_cells(self, x_coord, y_coord):
-        cells = self.cells
-        current_player = cells[y_coord][x_coord]
+        if self.cells[start_y][start_x] != player:
+            return []
         selected_cells = []
-        first_way = (x_coord + 1, y_coord + 1)
-        second_way = (x_coord + 1, y_coord - 1)
-        third_way = (x_coord - 1, y_coord + 1)
-        fourth_way = (x_coord - 1, y_coord - 1)
-        ways = [first_way, second_way, third_way, fourth_way]
-        for way in ways:
-            is_corrected = self.is_correct_step(current_player, (x_coord, y_coord), way)
-            if is_corrected:
-                selected_cells.append(way)
+        for right_dir in RIGHT_DIRS[player]:
+            x_bias, y_bias = right_dir
+            if player > 0:
+                cut_way = self.cells[start_y + y_bias * 2][start_x + x_bias * 2]
+                pass
         return selected_cells

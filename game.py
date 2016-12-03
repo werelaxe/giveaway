@@ -22,22 +22,23 @@ class Game:
     """
     def click(self, x_coord, y_coord):
         if self.field.cells[y_coord][x_coord]:
-            if self.field.cells[y_coord][x_coord] == self.current_player:
-                self.selected_cells = self.field.get_selected_cells(x_coord, y_coord)
+            selected_cells = self.field.get_selected_cells(
+                self.current_player, (x_coord, y_coord))
+            self.selected_cells = selected_cells
+            if selected_cells:
                 self.active_cell = (x_coord, y_coord)
             else:
-                self.selected_cells = []
                 self.active_cell = None
         else:
             if (x_coord, y_coord) in self.selected_cells:
-                x_active, y_active = self.active_cell
+                active_x, active_y = self.active_cell
                 self.field.cells[y_coord][x_coord] = self.current_player
-                self.field.cells[y_active][x_active] = EMPTY
+                self.field.cells[active_y][active_x] = EMPTY
+                self.selected_cells = []
+                self.active_cell = None
                 self.current_player += 1
                 if self.current_player == 5:
                     self.current_player = 1
-            self.selected_cells = []
-            self.active_cell = None
 
     def update(self):
         print('Updating field: {}'.format(self))
