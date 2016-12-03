@@ -28,6 +28,8 @@ def cell_mul(cell, number):
 
 
 def get_start_player(coord_x, coord_y, field_size):
+    if (coord_x == 5) and (coord_y == 6):
+        return -BOTTOM_PLAYER
     if (coord_x + coord_y) % 2:
         if 0 <= coord_x <= 2:  # left player
             if 3 <= coord_y <= field_size - 4:
@@ -89,36 +91,62 @@ class Field:
         size = self.size
         for index in range(size ** 2):
             curr_cell = (index % size, index // size)
-            if self[curr_cell] == player:
-                if self.get_cut_cells(player, curr_cell):
+            if abs(self[curr_cell]) == abs(player):
+                if self.get_cut_cells(self[curr_cell], curr_cell):
                     return True
         return False
 
     def get_selected_cells(self, player, start_cell):
         if self.check_cut_exists(player):
             return []
-        if self[start_cell] != player:
+        if abs(self[start_cell]) != abs(player):
             return []
         selected_cells = []
-        for right_dir in RIGHT_DIRS[player]:
-            if player > 0:
+        if player > 0:
+            for right_dir in RIGHT_DIRS[player]:
                 if self[cell_sum(start_cell, right_dir)] == EMPTY:
                     selected_cells.append(cell_sum(start_cell, right_dir))
+        else:  # it's a king (pain)
+            for direction in ANY_DIRS:
+                for index in range(1, self.size):
+                    if self.is_inside(cell_sum(start_cell, cell_mul(direction, index))) and \
+                            not self[cell_sum(start_cell, cell_mul(direction, index))]:
+                        selected_cells.append((cell_sum(start_cell, cell_mul(direction, index))))
+                    else:
+                        break
+
         return selected_cells
 
     def get_cut_cells(self, player, start_cell):
-        if self[start_cell] != player:
-            return []
+        if abs(self[start_cell]) != abs(player):
+            return {}
         cut_cells = {}
-        for right_dir in ANY_DIRS:
-            if not self.is_inside(cell_sum(start_cell, cell_mul(right_dir, 2))):
-                continue
-            if player > 0:
+        if player > 0:
+            for right_dir in ANY_DIRS:
+                if not self.is_inside(cell_sum(start_cell, cell_mul(right_dir, 2))):
+                    continue
                 if self[cell_sum(start_cell, cell_mul(right_dir, 2))] == EMPTY and \
-                                self[cell_sum(start_cell, right_dir)] != player and \
+                                abs(self[cell_sum(start_cell, right_dir)]) != abs(player) and \
                         self[cell_sum(start_cell, right_dir)]:
                     cut_cells[cell_sum(start_cell, cell_mul(right_dir, 2))] = \
                         cell_sum(start_cell, right_dir)
-
-        # print(selected_cells, cut_cells)
+        if player < 0:
+            for direction in ANY_DIRS:
+                enemy_met = False
+                enemy = None
+                for index in range(1, self.size):
+                    curr_cell = cell_sum(start_cell, cell_mul(direction, index))
+                    if not self.is_inside(curr_cell):
+                        break
+                    if abs(self[curr_cell]) == abs(player):
+                        break
+                    if self[curr_cell]:
+                        if not enemy_met:
+                            enemy_met = True
+                            enemy = curr_cell
+                        else:
+                            break
+                    else:
+                        if enemy_met:
+                            cut_cells[curr_cell] = enemy
         return cut_cells
