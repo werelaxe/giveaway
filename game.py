@@ -8,6 +8,7 @@ class Game:
         self.current_player = BOTTOM_PLAYER
         self.selected_cells = []
         self.active_cell = None
+        self.cutting_cell = None
 
     def change_cell(self, cell):
         self.field[cell] += 1
@@ -16,6 +17,9 @@ class Game:
 
     def click(self, step_cell):
         if abs(self.field[step_cell]) == abs(self.current_player):
+            if self.cutting_cell is not None:
+                if self.cutting_cell != step_cell:
+                    return
             selected_cells = self.field.get_selected_cells(self.field[step_cell], step_cell)
             cut_cells = self.field.get_cut_cells(self.field[step_cell], step_cell)
             if cut_cells:
@@ -27,6 +31,9 @@ class Game:
             else:
                 self.active_cell = None
         elif not self.field[step_cell]:
+            if self.cutting_cell is not None:
+                if self.active_cell != self.cutting_cell:
+                    return
             if step_cell in self.selected_cells:
                 self.field[step_cell] = self.field[self.active_cell]
                 self.field[self.active_cell] = EMPTY
@@ -34,12 +41,14 @@ class Game:
                     self.field[self.selected_cells[step_cell]] = EMPTY
                 self.selected_cells = []
                 self.active_cell = None
-                print("cut")
-                print(self.field.check_cut_exists(self.field[step_cell]))
-                if not self.field.check_cut_exists(self.field[step_cell]):
+                if not self.field.get_cut_cells(self.current_player, step_cell):
+                    self.cutting_cell = None
                     self.current_player += 1
                     if self.current_player == 5:
                         self.current_player = 1
+                else:
+                    self.cutting_cell = step_cell
+                    print(step_cell)
 
     def update(self):
         print('Updating field: {}'.format(self))
