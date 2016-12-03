@@ -18,20 +18,23 @@ class Example(QWidget):
         self.timer = QBasicTimer()
         self.res_height = res_height
         self.game = Game(14)
-        self.factor = width // self.game.field.size
+        self.factor = width / self.game.field.size
         self.init_ui()
 
     def init_ui(self):
-        self.setGeometry((self.res_width - width) // 2,
-                         (self.res_height - height) // 2, width, height)
+        self.setGeometry((self.res_width - width) / 2,
+                         (self.res_height - height) / 2, width, height)
         self.setWindowTitle('Giveaway')
         self.show()
 
     def mousePressEvent(self, event):
-        x_coord = event.pos().x() // self.factor
-        y_coord = event.pos().y() // self.factor
-        self.game.click(x_coord, y_coord)
-        print('Current player: {}'.format(self.game.current_player))
+        x_coord = int(event.pos().x() / self.factor)
+        y_coord = int(event.pos().y() / self.factor)
+        if event.button() == Qt.LeftButton:
+            self.game.click(x_coord, y_coord)
+            print('Current player: {}'.format(self.game.current_player))
+        if event.button() == Qt.RightButton:
+            self.game.change_cell((x_coord, y_coord))
         self.update()
 
     def paintEvent(self, event):

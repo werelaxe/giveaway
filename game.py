@@ -8,24 +8,16 @@ class Game:
         self.current_player = BOTTOM_PLAYER
         self.selected_cells = []
         self.active_cell = None
-    """
-    def try_step(self, start_cell, final_cell):
-        start_x, start_y = start_cell
-        final_x, final_y = final_cell
-        if is_correct_step(
-                self.field.cells, self.current_player, start_cell, final_cell):
-            self.field.cells[start_y][start_y] = EMPTY
-            self.field.cells[final_y][final_x] = self.current_player
-            return 0
-        else:
-            return 1
-    """
+
+    def change_cell(self, cell):
+        self.field[cell] += 1
+        if self.field[cell] == 5:
+            self.field[cell] = -4
+
     def click(self, x_coord, y_coord):
-
+        print(self.field.cells[y_coord][x_coord])
         if self.field.cells[y_coord][x_coord]:
-
             selected_cells = self.field.get_selected_cells(self.current_player, (x_coord, y_coord))
-            print('expected: {}'.format(selected_cells))
             cut_cells = self.field.get_cut_cells(self.current_player, (x_coord, y_coord))
             if cut_cells:
                 self.selected_cells = cut_cells
@@ -36,7 +28,6 @@ class Game:
                 self.active_cell = (x_coord, y_coord)
             else:
                 self.active_cell = None
-            print('game.selected cells: {}'.format(self.selected_cells))
         else:
             if (x_coord, y_coord) in self.selected_cells:
                 self.field[x_coord, y_coord] = self.current_player

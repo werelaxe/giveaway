@@ -111,7 +111,6 @@ class Field:
             return []
         cut_cells = {}
         for right_dir in ANY_DIRS:
-            print(right_dir)
             if not self.is_inside(cell_sum(start_cell, cell_mul(right_dir, 2))):
                 continue
             if player > 0:

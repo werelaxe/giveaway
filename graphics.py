@@ -10,13 +10,13 @@ LIGHT_BROWN = QColor(255, 209, 71)
 
 
 def set_current_color(cell, qp):
-    if cell == BOTTOM_PLAYER:
+    if abs(cell) == BOTTOM_PLAYER:
         qp.setBrush(Qt.red)
-    elif cell == LEFT_PLAYER:
+    elif abs(cell) == LEFT_PLAYER:
         qp.setBrush(Qt.green)
-    elif cell == TOP_PLAYER:
+    elif abs(cell) == TOP_PLAYER:
         qp.setBrush(Qt.blue)
-    elif cell == RIGHT_PLAYER:
+    elif abs(cell) == RIGHT_PLAYER:
         qp.setBrush(Qt.yellow)
 
 
@@ -51,5 +51,13 @@ def draw_game(qp, game, width, height, factor, correction=0.8):
         if cell:
             set_current_color(cell, qp)
             qp.drawEllipse(x_coord * factor + factor * (1 - correction) / 2,
-                            y_coord * factor + factor * (1 - correction) / 2,
-                            factor * correction, factor * correction)
+                           y_coord * factor + factor * (1 - correction) / 2,
+                           factor * correction, factor * correction)
+            if cell < 0:
+                for coefficient in range(5):
+                    coeff = 1 - (coefficient + 1) / 5
+                    print(coeff)
+                    qp.drawEllipse(x_coord * factor + factor * (1 - correction * coeff) / 2,
+                                   y_coord * factor + factor * (1 - correction * coeff) / 2,
+                                   factor * correction * coeff, factor * correction * coeff)
+
