@@ -6,33 +6,34 @@ from game import Game
 from PyQt5.QtWidgets import QWidget, QLabel, QApplication
 from PyQt5.QtCore import QBasicTimer
 
-width = 800
-height = 800
 
 
 class Example(QWidget):
     def __init__(self, resolution):
         super().__init__()
         res_width, res_height = resolution.width(), resolution.height()
+
         self.res_width = res_width
         self.timer = QBasicTimer()
         self.res_height = res_height
-        self.game = Game(14)
-        self.factor = width / self.game.field.size
+        self.game = Game(20)
+        self.factor = (res_height - 100) / self.game.field.size
         self.init_ui()
 
     def init_ui(self):
-        self.setGeometry((self.res_width - width) / 2,
-                         (self.res_height - height) / 2, width, height)
+        height = self.res_height - 100
+        self.setGeometry((self.res_width - height - 200) / 2,
+                         100 / 2, height + 200, height)
         self.setWindowTitle('Giveaway')
         self.show()
 
     def mousePressEvent(self, event):
         x_coord = int(event.pos().x() / self.factor)
         y_coord = int(event.pos().y() / self.factor)
+        if x_coord >= self.game.field.size:
+            return
         if event.button() == Qt.LeftButton:
-            self.game.click(x_coord, y_coord)
-            print('Current player: {}'.format(self.game.current_player))
+            self.game.click((x_coord, y_coord))
         if event.button() == Qt.RightButton:
             self.game.change_cell((x_coord, y_coord))
         self.update()
@@ -49,5 +50,6 @@ class Example(QWidget):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = Example(app.desktop().screenGeometry())
+    resolution = app.desktop().screenGeometry()
+    ex = Example(resolution)
     sys.exit(app.exec_())
