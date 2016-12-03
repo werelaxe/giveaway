@@ -35,6 +35,7 @@ def draw_game(qp, game, width, height, factor, correction=0.8):
     pen = QPen(Qt.green, 5, Qt.SolidLine)
     qp.setPen(pen)
     qp.setBrush(DARK_BROWN)
+    # print(game.selected_cells)
     for selected_cell in game.selected_cells:
         x_coord, y_coord = selected_cell
         qp.drawRect(x_coord * factor, y_coord * factor, factor, factor)

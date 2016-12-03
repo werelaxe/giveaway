@@ -1,18 +1,30 @@
+from itertools import product
+
+
 EMPTY = 0
 BOTTOM_PLAYER = 1
 LEFT_PLAYER = 2
 TOP_PLAYER = 3
 RIGHT_PLAYER = 4
 
-RIGHT_DIRS = [0] * 5
+RIGHT_DIRS = [[]] * 5
 RIGHT_DIRS[BOTTOM_PLAYER] = [(1, -1), (-1, -1)]
 RIGHT_DIRS[LEFT_PLAYER] = [(1, 1), (1, -1)]
 RIGHT_DIRS[TOP_PLAYER] = [(1, 1), (-1, 1)]
 RIGHT_DIRS[RIGHT_PLAYER] = [(-1, 1), (-1, -1)]
+ANY_DIRS = list(product([-1, 1], repeat=2))
 
 
 def check_direction(player, direction):
     return direction in RIGHT_DIRS[player]
+
+
+def cell_sum(first_cell, second_cell):
+    return tuple(map(sum, zip(first_cell, second_cell)))
+
+
+def cell_mul(cell, number):
+    return tuple(map(lambda x: x * number, cell))
 
 
 def get_start_player(coord_x, coord_y, field_size):
@@ -36,11 +48,18 @@ class Field:
     def __init__(self, size):
         self.cells = []
         self.size = size
-        self.cut_exists = False
         for indy in range(size):
             self.cells.append([])
             for indx in range(size):
                 self.cells[indy].append(get_start_player(indx, indy, size))
+
+    def __getitem__(self, cell):
+        x_coord, y_coord = cell
+        return self.cells[y_coord][x_coord]
+
+    def __setitem__(self, cell, value):
+        x_coord, y_coord = cell
+        self.cells[y_coord][x_coord] = value
 
     def print_field(self):
         for line in self.cells:
@@ -66,14 +85,41 @@ class Field:
             return False
         return True
 
+    def check_cut_exists(self, player):
+        size = self.size
+        for index in range(size ** 2):
+            curr_cell = (index % size, index // size)
+            if self[curr_cell] == player:
+                if self.get_cut_cells(player, curr_cell):
+                    return True
+        return False
+
     def get_selected_cells(self, player, start_cell):
-        start_x, start_y = start_cell
-        if self.cells[start_y][start_x] != player:
+        if self.check_cut_exists(player):
+            return []
+        if self[start_cell] != player:
             return []
         selected_cells = []
         for right_dir in RIGHT_DIRS[player]:
-            x_bias, y_bias = right_dir
             if player > 0:
-                cut_way = self.cells[start_y + y_bias * 2][start_x + x_bias * 2]
-                pass
+                if self[cell_sum(start_cell, right_dir)] == EMPTY:
+                    selected_cells.append(cell_sum(start_cell, right_dir))
         return selected_cells
+
+    def get_cut_cells(self, player, start_cell):
+        if self[start_cell] != player:
+            return []
+        cut_cells = {}
+        for right_dir in ANY_DIRS:
+            print(right_dir)
+            if not self.is_inside(cell_sum(start_cell, cell_mul(right_dir, 2))):
+                continue
+            if player > 0:
+                if self[cell_sum(start_cell, cell_mul(right_dir, 2))] == EMPTY and \
+                                self[cell_sum(start_cell, right_dir)] != player and \
+                        self[cell_sum(start_cell, right_dir)]:
+                    cut_cells[cell_sum(start_cell, cell_mul(right_dir, 2))] = \
+                        cell_sum(start_cell, right_dir)
+
+        # print(selected_cells, cut_cells)
+        return cut_cells
