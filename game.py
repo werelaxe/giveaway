@@ -1,4 +1,4 @@
-from logic import Field, LEFT_PLAYER, RIGHT_PLAYER, BOTTOM_PLAYER,\
+from logic import Field, LEFT_PLAYER, BOTTOM_PLAYER,\
     EMPTY
 
 
