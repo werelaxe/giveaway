@@ -51,7 +51,7 @@ class Game:
                     print(step_cell)
 
     def update(self):
-        print('Updating field: {}'.format(self))
+        print('updating field: {}'.format(self))
 
 if __name__ == '__main__':
     game = Game(14)
