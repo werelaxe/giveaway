@@ -5,7 +5,7 @@ from PyQt5.QtGui import QPainter
 from game import Game
 from PyQt5.QtWidgets import QWidget, QLabel, QApplication
 from PyQt5.QtCore import QBasicTimer
-from ai import do_first_possible_step
+from ai import do_first_possible_step, count_stat
 
 
 class Example(QWidget):
@@ -16,20 +16,25 @@ class Example(QWidget):
         self.res_width = res_width
         self.timer = QBasicTimer()
         self.res_height = res_height
-        self.game = Game(20)
+        self.game = Game(14)
         self.factor = (res_height - 100) / self.game.field.size
+        print(self.factor)
         self.init_ui()
 
     def init_ui(self):
         height = self.res_height - 100
         self.setGeometry((self.res_width - height - 200) / 2,
                          100 / 2, height + 200, height)
+        self.timer = QBasicTimer()
+        #self.timer.start(100, self)
         self.setWindowTitle('Giveaway')
         self.show()
 
     def mousePressEvent(self, event):
         x_coord = int(event.pos().x() / self.factor)
         y_coord = int(event.pos().y() / self.factor)
+        print(self.game.field.get_selected_cells_without_cut_factor(self.game.field[(x_coord, y_coord)], (x_coord, y_coord)))
+        print(self.game.field.get_cut_cells(self.game.field[(x_coord, y_coord)], (x_coord, y_coord)))
         if x_coord >= self.game.field.size:
             return
         if event.button() == Qt.LeftButton:
@@ -50,6 +55,13 @@ class Example(QWidget):
         if event.key() == Qt.Key_Control:
             do_first_possible_step(self.game)
             self.update()
+
+    def timerEvent(self, e):
+        do_first_possible_step(self.game)
+        self.update()
+
+    def update(self, *__args):
+        self.repaint()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

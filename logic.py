@@ -15,6 +15,27 @@ RIGHT_DIRS[RIGHT_PLAYER] = [(-1, 1), (-1, -1)]
 ANY_DIRS = list(product([-1, 1], repeat=2))
 
 
+def is_final_line(player, cell, field):
+    size = field.size
+    if player == BOTTOM_PLAYER:
+        if not cell[1]:
+            return True
+        return False
+    if player == LEFT_PLAYER:
+        if cell[0] == size - 1:
+            return True
+        return False
+    if player == TOP_PLAYER:
+        if cell[1] == size - 1:
+            return True
+        return False
+    if player == RIGHT_PLAYER:
+        if not cell[0]:
+            return True
+        return False
+    raise ValueError(player)
+
+
 def check_direction(player, direction):
     return direction in RIGHT_DIRS[player]
 
@@ -78,15 +99,7 @@ class Field:
             return False
         if not (0 <= y_coord < field_size):
             return False
-        if (0 <= x_coord <= 3) and (0 <= y_coord <= 3):
-            return False
-        if (0 <= x_coord <= 2) and (field_size - 3 <= y_coord <= field_size - 1):
-            return False
-        if (0 <= y_coord <= 2) and (field_size - 3 <= x_coord <= field_size - 1):
-            return False
-        if (field_size - 3 <= y_coord <= field_size - 1) and \
-                (field_size - 3 <= x_coord <= field_size - 1):
-            return False
+
         return True
 
     def check_cut_exists(self, player):
@@ -98,16 +111,15 @@ class Field:
                     return True
         return False
 
-    def get_selected_cells(self, player, start_cell):
-        if self.check_cut_exists(player):
-            return []
+    def get_selected_cells_without_cut_factor(self, player, start_cell):
         if abs(self[start_cell]) != abs(player):
             return []
         selected_cells = []
         if player > 0:
             for right_dir in RIGHT_DIRS[player]:
-                if self[cell_sum(start_cell, right_dir)] == EMPTY:
-                    selected_cells.append(cell_sum(start_cell, right_dir))
+                if self.is_inside(cell_sum(start_cell, right_dir)):
+                    if self[cell_sum(start_cell, right_dir)] == EMPTY:
+                        selected_cells.append(cell_sum(start_cell, right_dir))
         else:  # it's a king (pain)
             for direction in ANY_DIRS:
                 for index in range(1, self.size):
@@ -116,8 +128,12 @@ class Field:
                         selected_cells.append((cell_sum(start_cell, cell_mul(direction, index))))
                     else:
                         break
-
         return selected_cells
+
+    def get_selected_cells(self, player, start_cell):
+        if self.check_cut_exists(player):
+            return []
+        return self.get_selected_cells_without_cut_factor(player, start_cell)
 
     def get_cut_cells(self, player, start_cell):
         if abs(self[start_cell]) != abs(player):

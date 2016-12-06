@@ -3,10 +3,10 @@ from PyQt5.QtGui import QColor
 from PyQt5.QtGui import QFont
 from PyQt5.QtGui import QPainter
 from PyQt5.QtGui import QPen
-
+from ai import count_stat
 from logic import LEFT_PLAYER, RIGHT_PLAYER, BOTTOM_PLAYER, TOP_PLAYER
 
-VERTY_DARK_BROWN = QColor(120, 33, 0)
+VERY_DARK_BROWN = QColor(120, 33, 0)
 DARK_BROWN = QColor(150, 53, 0)
 LIGHT_BROWN = QColor(255, 209, 71)
 
@@ -22,15 +22,46 @@ def set_current_color(player, qp):
         qp.setBrush(Qt.yellow)
 
 
+def draw_stat(qp, game, width, height, factor, correction):
+    qp.setPen(LIGHT_BROWN)
+    qp.setFont(QFont('Times new roman', 25))
+    qp.drawText(height - 20, 60, 200, 60, Qt.AlignCenter, "Statistics:")
+
+    stat = count_stat(game.field)
+    max_value = max(stat)
+    LINE_WIDTH = 50
+    BETWEEN_OFFSET = 5
+    TOP_OFFSET  = 120
+    max_len = height - 10 - TOP_OFFSET
+    qp.setPen(Qt.black)
+
+    bottom_factor = stat[0] / max_value
+    qp.setBrush(Qt.red)
+    qp.drawRect(height + BETWEEN_OFFSET, TOP_OFFSET, 40, max_len * bottom_factor)
+
+    left_factor = stat[1] / max_value
+    qp.setBrush(Qt.green)
+    qp.drawRect(height + BETWEEN_OFFSET + LINE_WIDTH, TOP_OFFSET, 40, max_len * left_factor)
+
+    top_factor = stat[2] / max_value
+    qp.setBrush(Qt.blue)
+    qp.drawRect(height + BETWEEN_OFFSET + LINE_WIDTH * 2, TOP_OFFSET, 40, max_len * top_factor)
+
+    right_factor = stat[3] / max_value
+    qp.setBrush(Qt.yellow)
+    qp.drawRect(height + BETWEEN_OFFSET + LINE_WIDTH * 3, TOP_OFFSET, 40, max_len * right_factor)
+
+
 def draw_status_bar(qp, game, width, height, factor, correction):
-    qp.setBrush(VERTY_DARK_BROWN)
-    qp.drawRect(height, 0, height, height)
+    qp.setBrush(VERY_DARK_BROWN)
+    qp.drawRect(height, 0, width - height, height)
+    draw_stat(qp, game, width, height, factor, correction)
     qp.setPen(LIGHT_BROWN)
     qp.setFont(QFont('Times new roman', 25))
     qp.drawText(height - 30, 0, 200, 60, Qt.AlignCenter, "Player:")
     qp.setPen(Qt.black)
     set_current_color(game.current_player, qp)
-    qp.drawEllipse(height + 130, 15, factor * correction, factor * correction)
+    qp.drawEllipse(height + 130, 12, 49 * correction, 49 * correction)
 
 
 def draw_field(qp, field, width, height, factor):
