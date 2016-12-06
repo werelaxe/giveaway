@@ -1,4 +1,4 @@
-from logic import Field, LEFT_PLAYER, BOTTOM_PLAYER, TOP_PLAYER,\
+from logic import Field, LEFT_PLAYER, RIGHT_PLAYER, BOTTOM_PLAYER, TOP_PLAYER,\
     EMPTY
 
 
@@ -26,7 +26,7 @@ class Game:
         else:
             self.active_cell = None
 
-    def do_cut(self, step_cell):
+    def do_step(self, step_cell):
         if step_cell in self.selected_cells:
             self.field[step_cell] = self.field[self.active_cell]
             self.field[self.active_cell] = EMPTY
@@ -43,7 +43,7 @@ class Game:
         if abs(self.field[step_cell]) == abs(self.current_player):
             self.select_cell(step_cell)
         elif not self.field[step_cell]:
-            self.do_cut(step_cell)
+            self.do_step(step_cell)
 
     def update(self):
         print('Updating field: {}'.format(self))

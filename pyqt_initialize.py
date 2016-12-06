@@ -5,6 +5,7 @@ from PyQt5.QtGui import QPainter
 from game import Game
 from PyQt5.QtWidgets import QWidget, QLabel, QApplication
 from PyQt5.QtCore import QBasicTimer
+from ai import do_first_possible_step
 
 
 class Example(QWidget):
@@ -46,6 +47,9 @@ class Example(QWidget):
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Escape:
             self.close()
+        if event.key() == Qt.Key_Control:
+            do_first_possible_step(self.game)
+            self.update()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

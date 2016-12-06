@@ -30,6 +30,8 @@ def cell_mul(cell, number):
 def get_start_player(coord_x, coord_y, field_size):
     if (coord_x == 5) and (coord_y == 6):
         return -BOTTOM_PLAYER
+    if (coord_x == 9) and (coord_y == 10):
+        return LEFT_PLAYER
     if (coord_x + coord_y) % 2:
         if 0 <= coord_x <= 2:  # left player
             if 3 <= coord_y <= field_size - 4:

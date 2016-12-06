@@ -1,7 +1,7 @@
 from collections import defaultdict
 
 from logic import LEFT_PLAYER, RIGHT_PLAYER, BOTTOM_PLAYER, TOP_PLAYER, Field
-
+from game import Game
 
 def count_stat(field):
     size = field.size
@@ -29,18 +29,30 @@ def count_stat(field):
     return bottom_sum, left_sum, top_sum, right_sum
 
 
-def get_first_possible_step(player, field):
+def do_first_possible_step(game:Game):
+    player = game.current_player
+    field = game.field
     size = field.size
     for index in range(size ** 2):
         curr_cell = (index % size, index // size)
         if abs(field[curr_cell]) == abs(player):
-            steps = field.get_selected_cells(field[curr_cell], curr_cell)
-            if steps:
-                return curr_cell, steps[0]
-            cuts = field.get_cut_cells(field[curr_cell], curr_cell)
-            if cuts:
-                return curr_cell, cuts[0]
+            game.click(curr_cell)
+            if game.selected_cells:
+                print('start')
+                if type(game.selected_cells) == dict:
+                    print('cutting')
+                    game.do_step(list(game.selected_cells.keys())[0])
+                elif type(game.selected_cells) == list:
+                    print('stepping')
+                    print(game.selected_cells)
+                    game.do_step(game.selected_cells[0])
 
-field = Field(14)
 
-print(get_first_possible_step(BOTTOM_PLAYER, field))
+
+
+
+
+
+
+
+
