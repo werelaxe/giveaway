@@ -7,7 +7,6 @@ from PyQt5.QtWidgets import QWidget, QLabel, QApplication
 from PyQt5.QtCore import QBasicTimer
 
 
-
 class Example(QWidget):
     def __init__(self, resolution):
         super().__init__()
