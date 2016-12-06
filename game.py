@@ -1,7 +1,6 @@
 from logic import Field, LEFT_PLAYER, RIGHT_PLAYER, BOTTOM_PLAYER, TOP_PLAYER,\
     EMPTY
 
-
 class Game:
     def __init__(self, size):
         self.field = Field(size)
