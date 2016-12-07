@@ -41,7 +41,7 @@ def count_stat(field):
         left_sum += key[-LEFT_PLAYER]
         right_sum += key[RIGHT_PLAYER]
         right_sum += key[-RIGHT_PLAYER]
-    return field.cells_count, (bottom_sum, left_sum, top_sum, right_sum)
+    return bottom_sum, left_sum, top_sum, right_sum
 
 
 def do_first_possible_step(game):
@@ -59,13 +59,17 @@ def do_first_possible_step(game):
                     game.do_step(game.selected_cells[0])
 
 
+def get_cut_benefit():
+    pass
+
+
 def get_step_benefit(counting_game, start_cell, finish_step):
     game = deepcopy(counting_game)
-    start_cells_count, start_stat = count_stat(game.field)
+    start_stat = count_stat(game.field)
     player = game.current_player
     game.click(start_cell)
     game.do_step(finish_step)
-    finish_cells_count, finish_stat = count_stat(game.field)
+    finish_stat = count_stat(game.field)
     return get_benefit(abs(player), start_stat, finish_stat)
 
 
@@ -101,14 +105,15 @@ def get_steps_chain(game, steps, deep, max_deep):
     return result
 
 
-def print_chain(chain, deep, global_dict):
+def get_states(chain, deep, global_dict, state, states_list):
     for element in chain:
-        print("    " * deep + str(element[0]))
+        # print("    " * deep + str(element[0]))
         global_dict[element[0]] = {}
         if element[1] != 'end':
-            print("    " * deep)
-            print_chain(element[1], deep + 1, global_dict[element[0]])
-    return global_dict
+            # print("    " * deep)
+            get_states(element[1], deep + 1, global_dict[element[0]], state + [element[0]], states_list)
+        else:
+            states_list.append(state)
 
 
 def do_smart_step(game):

@@ -41,9 +41,7 @@ class Example(QWidget):
         if event.button() == Qt.RightButton:
             self.game.change_cell((x_coord, y_coord))
         if event.button() == Qt.MiddleButton:
-            steps = ai.get_steps_chain(self.game, ai.get_possible_steps(self.game), 0, 3)
-            tree = ai.print_chain(steps, 0, {})
-            print(tree[((4,7),(5,6))][((0,3),(1,2))][((3, 0), (4, 1))])
+            pass
         self.update()
 
     def paintEvent(self, event):
@@ -59,6 +57,12 @@ class Example(QWidget):
             # do_first_possible_step(self.game)
             do_smart_step(self.game)
             self.update()
+        if event.key() == Qt.Key_Space:
+            steps = ai.get_steps_chain(self.game, ai.get_possible_steps(self.game), 0, 3)
+            states = []
+            ai.get_states(steps, 0, {}, [], states)
+            for e in states:
+                print(e)
 
     def timerEvent(self, e):
         if self.game.current_player != 1 and False:
