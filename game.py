@@ -21,6 +21,8 @@ class Game:
     def select_cell(self, step_cell):
         selected_cells = self.field.get_selected_cells(self.field[step_cell], step_cell)
         cut_cells = self.field.get_cut_cells(self.field[step_cell], step_cell)
+        print("cut cells: {}".format(cut_cells))
+        print("sel cells: {}".format(selected_cells))
         if cut_cells:
             self.selected_cells = cut_cells
         else:

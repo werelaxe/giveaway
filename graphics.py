@@ -30,24 +30,24 @@ def draw_stat(qp, game, width, height, factor, correction):
     qp.setFont(QFont('Times new roman', 25))
     qp.drawText(height - 20, 60, 200, 60, Qt.AlignCenter, "Statistics:")
 
-    stat = count_stat(game.field)
-    max_value = max(stat)
+    cells, completeness = count_stat(game.field)
+    max_value = max(completeness)
     max_len = height - 10 - TOP_OFFSET
     qp.setPen(Qt.black)
 
-    bottom_factor = stat[0] / max_value
+    bottom_factor = completeness[0] / max_value
     qp.setBrush(Qt.red)
     qp.drawRect(height + BETWEEN_OFFSET, TOP_OFFSET, 40, max_len * bottom_factor)
 
-    left_factor = stat[1] / max_value
+    left_factor = completeness[1] / max_value
     qp.setBrush(Qt.green)
     qp.drawRect(height + BETWEEN_OFFSET + LINE_WIDTH, TOP_OFFSET, 40, max_len * left_factor)
 
-    top_factor = stat[2] / max_value
+    top_factor = completeness[2] / max_value
     qp.setBrush(Qt.blue)
     qp.drawRect(height + BETWEEN_OFFSET + LINE_WIDTH * 2, TOP_OFFSET, 40, max_len * top_factor)
 
-    right_factor = stat[3] / max_value
+    right_factor = completeness[3] / max_value
     qp.setBrush(Qt.yellow)
     qp.drawRect(height + BETWEEN_OFFSET + LINE_WIDTH * 3, TOP_OFFSET, 40, max_len * right_factor)
 

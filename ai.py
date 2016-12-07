@@ -41,7 +41,7 @@ def count_stat(field):
         left_sum += key[-LEFT_PLAYER]
         right_sum += key[RIGHT_PLAYER]
         right_sum += key[-RIGHT_PLAYER]
-    return bottom_sum, left_sum, top_sum, right_sum
+    return field.cells_count, (bottom_sum, left_sum, top_sum, right_sum)
 
 
 def do_first_possible_step(game):
@@ -60,17 +60,19 @@ def do_first_possible_step(game):
 
 
 def get_step_benefit(counting_game, start_cell, finish_step):
-
     game = deepcopy(counting_game)
-    start_stat = count_stat(game.field)
+    start_cells_count, start_stat = count_stat(game.field)
+    print(start_stat)
     player = game.current_player
     game.click(start_cell)
     game.do_step(finish_step)
-    finish_stat = count_stat(game.field)
+    finish_cells_count, finish_stat = count_stat(game.field)
+    print(finish_stat)
     return get_benefit(abs(player), start_stat, finish_stat)
 
 
 def do_smart_step(game):
+    print('counting step')
     current_player = game.current_player
     size = game.field.size
     field = game.field
@@ -80,15 +82,20 @@ def do_smart_step(game):
     cells = []
     for index in range(size ** 2):
         curr_cell = (index % size, index // size)
-        if field[curr_cell] == current_player:
+        if abs(field[curr_cell]) == abs(current_player):
             cells.append(curr_cell)
     for cell in cells:
+        print("click {}".format(cell))
         game.click(cell)
+
+        print("Possible steps: {}".format(game.selected_cells))
         if game.selected_cells:
             possible_cells = game.selected_cells
             for possible_cell in possible_cells:
                 possible_steps.append((cell, possible_cell))
-
+    if not possible_steps:
+        print("No way!")
+        return
     for start_cell, finish_cell in possible_steps:
         current_benefit = get_step_benefit(game, start_cell, finish_cell)
         if current_benefit > max_benefit:
