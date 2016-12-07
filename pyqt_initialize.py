@@ -57,7 +57,7 @@ class Example(QWidget):
             self.update()
 
     def timerEvent(self, e):
-        if self.game.current_player != -1:
+        if self.game.current_player != 1:
             do_smart_step(self.game)
         else:
             return

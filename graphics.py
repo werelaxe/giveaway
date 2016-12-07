@@ -30,26 +30,41 @@ def draw_stat(qp, game, width, height, factor, correction):
     qp.setFont(QFont('Times new roman', 25))
     qp.drawText(height - 20, 60, 200, 60, Qt.AlignCenter, "Statistics:")
 
-    cells, completeness = count_stat(game.field)
+    cell_count, completeness = count_stat(game.field)
+    max_count = -1
+    for count in cell_count.values():
+        max_count = max(max_count, count)
+
+    print("!!!!!!!!!")
+    print(cell_count)
+    print(max_count)
     max_value = max(completeness)
     max_len = height - 10 - TOP_OFFSET
     qp.setPen(Qt.black)
 
     bottom_factor = completeness[0] / max_value
+    bottom_count = cell_count[BOTTOM_PLAYER] / max_count
     qp.setBrush(Qt.red)
-    qp.drawRect(height + BETWEEN_OFFSET, TOP_OFFSET, 40, max_len * bottom_factor)
+    qp.drawRect(height + BETWEEN_OFFSET, TOP_OFFSET, 20, max_len * bottom_count)
+    qp.drawRect(height + BETWEEN_OFFSET + 20, TOP_OFFSET, 20, max_len * bottom_factor)
 
     left_factor = completeness[1] / max_value
+    left_count = cell_count[LEFT_PLAYER] / max_count
     qp.setBrush(Qt.green)
-    qp.drawRect(height + BETWEEN_OFFSET + LINE_WIDTH, TOP_OFFSET, 40, max_len * left_factor)
+    qp.drawRect(height + BETWEEN_OFFSET + LINE_WIDTH, TOP_OFFSET, 20, max_len * left_count)
+    qp.drawRect(height + BETWEEN_OFFSET + LINE_WIDTH + 20, TOP_OFFSET, 20, max_len * left_factor)
 
     top_factor = completeness[2] / max_value
+    top_count = cell_count[TOP_PLAYER] / max_count
     qp.setBrush(Qt.blue)
-    qp.drawRect(height + BETWEEN_OFFSET + LINE_WIDTH * 2, TOP_OFFSET, 40, max_len * top_factor)
+    qp.drawRect(height + BETWEEN_OFFSET + LINE_WIDTH * 2, TOP_OFFSET, 20, max_len * top_count)
+    qp.drawRect(height + BETWEEN_OFFSET + LINE_WIDTH * 2 + 20, TOP_OFFSET, 20, max_len * top_factor)
 
     right_factor = completeness[3] / max_value
+    right_count = cell_count[RIGHT_PLAYER] / max_count
     qp.setBrush(Qt.yellow)
-    qp.drawRect(height + BETWEEN_OFFSET + LINE_WIDTH * 3, TOP_OFFSET, 40, max_len * right_factor)
+    qp.drawRect(height + BETWEEN_OFFSET + LINE_WIDTH * 3, TOP_OFFSET, 20, max_len * right_count)
+    qp.drawRect(height + BETWEEN_OFFSET + LINE_WIDTH * 3 + 20, TOP_OFFSET, 20, max_len * right_factor)
 
 
 def draw_status_bar(qp, game, width, height, factor, correction):
