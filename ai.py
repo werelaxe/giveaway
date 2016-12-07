@@ -1,6 +1,8 @@
 from collections import defaultdict
 from copy import copy, deepcopy
 
+import sys
+
 from logic import LEFT_PLAYER, RIGHT_PLAYER, BOTTOM_PLAYER, TOP_PLAYER
 
 
@@ -59,8 +61,17 @@ def do_first_possible_step(game):
                     game.do_step(game.selected_cells[0])
 
 
-def get_cut_benefit():
-    pass
+def get_cut_benefit(game, step_chain):
+    copy_game = deepcopy(game)
+    current_player = deepcopy(copy_game.current_player)
+    start_cells_count = deepcopy(copy_game.field.cells_count)
+    for step in step_chain:
+        # print("select cells")
+        copy_game.click(step[0])
+        # print("do step")
+        copy_game.click(step[1])
+    finish_cells_count = copy_game.field.cells_count
+    return start_cells_count[current_player] - finish_cells_count[current_player]
 
 
 def get_step_benefit(counting_game, start_cell, finish_step):
@@ -113,7 +124,8 @@ def get_states(chain, deep, global_dict, state, states_list):
             # print("    " * deep)
             get_states(element[1], deep + 1, global_dict[element[0]], state + [element[0]], states_list)
         else:
-            states_list.append(state)
+            if state not in states_list:
+                states_list.append(state)
 
 
 def do_smart_step(game):
@@ -131,3 +143,31 @@ def do_smart_step(game):
     max_start_cell, max_finish_cell = max_possible_step
     game.click(max_start_cell)
     game.click(max_finish_cell)
+
+
+def do_very_smart_step(game, deep=3):
+    steps = get_steps_chain(game, get_possible_steps(game), 0, deep)
+    states = []
+    get_states(steps, 0, {}, [], states)
+    benefit_dict = defaultdict(int)
+    # print(states)
+    for state in states:
+        benefit = get_cut_benefit(game, state)
+        if benefit == 1:
+            max_step = state[0]
+            game.click(max_step[0])
+            game.click(max_step[1])
+            return
+        benefit_dict[state[0]] += benefit
+    max_benefit = -9999999
+    max_step = None
+
+    for step in benefit_dict.keys():
+        if max_benefit < benefit_dict[step]:
+            max_benefit = benefit_dict[step]
+            max_step = step
+
+    if max_step is None:
+        sys.exit(0)
+    game.click(max_step[0])
+    game.click(max_step[1])

@@ -31,7 +31,6 @@ def draw_stat(qp, game, width, height, factor, correction):
     qp.drawText(height - 20, 60, 200, 60, Qt.AlignCenter, "Statistics:")
 
     cell_count = game.field.cells_count
-    print(cell_count)
     completeness = count_stat(game.field)
     max_count = -1
     for count in cell_count.values():

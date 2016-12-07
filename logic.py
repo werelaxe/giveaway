@@ -62,16 +62,16 @@ def cell_mul(cell, number):
 
 def get_start_player(coord_x, coord_y, field_size):
     if (coord_x + coord_y) % 2:
-        if 0 <= coord_x <= 0:  # left player
+        if 0 <= coord_x <= 2:  # left player
             if 3 <= coord_y <= field_size - 4:
                 return LEFT_PLAYER
-        if field_size - 1 <= coord_x <= field_size - 1:  # right player
+        if field_size - 3 <= coord_x <= field_size - 1:  # right player
             if 3 <= coord_y <= field_size - 4:
                 return RIGHT_PLAYER
-        if 0 <= coord_y <= 0:  # top player
+        if 0 <= coord_y <= 2:  # top player
             if 3 <= coord_x <= field_size - 4:
                 return TOP_PLAYER
-        if field_size - 1 <= coord_y <= field_size - 1:  # bottom player
+        if field_size - 3 <= coord_y <= field_size - 1:  # bottom player
             if 3 <= coord_x <= field_size - 4:
                 return BOTTOM_PLAYER
     return EMPTY
@@ -97,12 +97,6 @@ class Field:
     def __setitem__(self, cell, value):
         x_coord, y_coord = cell
         self.cells[y_coord][x_coord] = value
-
-    def print_field(self):
-        for line in self.cells:
-            for c in line:
-                print(str(c) + ' ', end='')
-            print()
 
     def is_inside(self, cell):
         field_size = self.size

@@ -1,5 +1,5 @@
 from collections import defaultdict
-
+from random import randint
 from logic import Field, LEFT_PLAYER, RIGHT_PLAYER, BOTTOM_PLAYER, TOP_PLAYER,\
     EMPTY, is_final_line, get_name_by_id
 from ai import count_stat, get_benefit
@@ -8,7 +8,7 @@ from ai import count_stat, get_benefit
 class Game:
     def __init__(self, size):
         self.field = Field(size)
-        self.current_player = BOTTOM_PLAYER
+        self.current_player = randint(1, 4)
         self.selected_cells = []
         self.active_cell = None
         self.over = False
@@ -25,8 +25,10 @@ class Game:
             self.selected_cells = cut_cells
         else:
             self.selected_cells = selected_cells
+
         if selected_cells or cut_cells:
             self.active_cell = step_cell
+            # print("cells was successfully selected")
         else:
             self.active_cell = None
 
@@ -37,6 +39,7 @@ class Game:
 
     def do_step(self, step_cell):
         if step_cell in self.selected_cells:
+            # print("step was successfully done")
             self.field[step_cell] = self.field[self.active_cell]
             if is_final_line(abs(self.current_player), step_cell, self.field):
                 self.field[step_cell] = -abs(self.field[step_cell])
@@ -45,7 +48,8 @@ class Game:
                 cut_player = abs(self.field[self.selected_cells[step_cell]])
                 self.field.cells_count[cut_player] -= 1
                 if not self.field.cells_count[cut_player]:
-                    print("{} wins!".format(get_name_by_id(cut_player)))
+                    pass
+                    # print("{} wins!".format(get_name_by_id(cut_player)))
                     self.over = True
                 self.field[self.selected_cells[step_cell]] = EMPTY
                 if not self.field.get_cut_cells(
@@ -60,16 +64,4 @@ class Game:
         if abs(self.field[step_cell]) == abs(self.current_player):
             self.select_cell(step_cell)
         elif not self.field[step_cell]:
-            start_stat = count_stat(self.field)
-            player = self.current_player
             self.do_step(step_cell)
-            finish_stat = count_stat(self.field)
-            # print(start_stat)
-            # print(finish_stat)
-            # print(get_benefit(abs(player), start_stat, finish_stat))
-
-    def update(self):
-        print('Updating field: {}'.format(self))
-
-if __name__ == '__main__':
-    game = Game(14)
