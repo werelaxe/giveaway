@@ -62,37 +62,59 @@ def do_first_possible_step(game):
 def get_step_benefit(counting_game, start_cell, finish_step):
     game = deepcopy(counting_game)
     start_cells_count, start_stat = count_stat(game.field)
-    print(start_stat)
     player = game.current_player
     game.click(start_cell)
     game.do_step(finish_step)
     finish_cells_count, finish_stat = count_stat(game.field)
-    print(finish_stat)
     return get_benefit(abs(player), start_stat, finish_stat)
 
 
-def do_smart_step(game):
-    print('counting step')
+def get_possible_steps(copy_game):
+    game = deepcopy(copy_game)
     current_player = game.current_player
     size = game.field.size
     field = game.field
     possible_steps = []
-    max_benefit = -10000000000000
-    max_possible_step = (-1, -1)
     cells = []
     for index in range(size ** 2):
         curr_cell = (index % size, index // size)
         if abs(field[curr_cell]) == abs(current_player):
             cells.append(curr_cell)
     for cell in cells:
-        print("click {}".format(cell))
         game.click(cell)
-
-        print("Possible steps: {}".format(game.selected_cells))
         if game.selected_cells:
             possible_cells = game.selected_cells
             for possible_cell in possible_cells:
                 possible_steps.append((cell, possible_cell))
+    return possible_steps
+
+
+def get_steps_chain(game, steps, deep, max_deep):
+    if deep == max_deep:
+        return 'end'
+    result = []
+    for step in steps:
+        copy_game = deepcopy(game)
+        copy_game.click(step[0])
+        copy_game.click(step[1])
+        result.append((step, get_steps_chain(copy_game, get_possible_steps(copy_game), deep + 1, max_deep)))
+    return result
+
+
+def print_chain(chain, deep, global_dict):
+    for element in chain:
+        print("    " * deep + str(element[0]))
+        global_dict[element[0]] = {}
+        if element[1] != 'end':
+            print("    " * deep)
+            print_chain(element[1], deep + 1, global_dict[element[0]])
+    return global_dict
+
+
+def do_smart_step(game):
+    max_benefit = -10000000000000
+    max_possible_step = (-1, -1)
+    possible_steps = get_possible_steps(game)
     if not possible_steps:
         print("No way!")
         return
@@ -104,4 +126,3 @@ def do_smart_step(game):
     max_start_cell, max_finish_cell = max_possible_step
     game.click(max_start_cell)
     game.click(max_finish_cell)
-    print(max_benefit)

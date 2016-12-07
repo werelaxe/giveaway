@@ -21,8 +21,6 @@ class Game:
     def select_cell(self, step_cell):
         selected_cells = self.field.get_selected_cells(self.field[step_cell], step_cell)
         cut_cells = self.field.get_cut_cells(self.field[step_cell], step_cell)
-        print("cut cells: {}".format(cut_cells))
-        print("sel cells: {}".format(selected_cells))
         if cut_cells:
             self.selected_cells = cut_cells
         else:
@@ -41,7 +39,7 @@ class Game:
         if step_cell in self.selected_cells:
             self.field[step_cell] = self.field[self.active_cell]
             if is_final_line(abs(self.current_player), step_cell, self.field):
-                self.field[step_cell] *= -1
+                self.field[step_cell] = -abs(self.field[step_cell])
             self.field[self.active_cell] = EMPTY
             if type(self.selected_cells) == dict:
                 cut_player = abs(self.field[self.selected_cells[step_cell]])

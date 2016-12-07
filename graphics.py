@@ -34,10 +34,6 @@ def draw_stat(qp, game, width, height, factor, correction):
     max_count = -1
     for count in cell_count.values():
         max_count = max(max_count, count)
-
-    print("!!!!!!!!!")
-    print(cell_count)
-    print(max_count)
     max_value = max(completeness)
     max_len = height - 10 - TOP_OFFSET
     qp.setPen(Qt.black)

@@ -6,7 +6,7 @@ from game import Game
 from PyQt5.QtWidgets import QWidget, QLabel, QApplication
 from PyQt5.QtCore import QBasicTimer
 from ai import do_first_possible_step, do_smart_step
-
+import ai
 
 
 class Example(QWidget):
@@ -17,7 +17,7 @@ class Example(QWidget):
         self.res_width = res_width
         self.timer = QBasicTimer()
         self.res_height = res_height
-        self.game = Game(14)
+        self.game = Game(8)
         self.factor = (res_height - 100) / self.game.field.size
         self.init_ui()
 
@@ -40,6 +40,10 @@ class Example(QWidget):
             self.game.click((x_coord, y_coord))
         if event.button() == Qt.RightButton:
             self.game.change_cell((x_coord, y_coord))
+        if event.button() == Qt.MiddleButton:
+            steps = ai.get_steps_chain(self.game, ai.get_possible_steps(self.game), 0, 3)
+            tree = ai.print_chain(steps, 0, {})
+            print(tree[((4,7),(5,6))][((0,3),(1,2))][((3, 0), (4, 1))])
         self.update()
 
     def paintEvent(self, event):
@@ -57,7 +61,7 @@ class Example(QWidget):
             self.update()
 
     def timerEvent(self, e):
-        if self.game.current_player != 1:
+        if self.game.current_player != 1 and False:
             do_smart_step(self.game)
         else:
             return
