@@ -9,6 +9,9 @@ from logic import LEFT_PLAYER, RIGHT_PLAYER, BOTTOM_PLAYER, TOP_PLAYER
 VERY_DARK_BROWN = QColor(120, 33, 0)
 DARK_BROWN = QColor(150, 53, 0)
 LIGHT_BROWN = QColor(255, 209, 71)
+LINE_WIDTH = 50
+BETWEEN_OFFSET = 5
+TOP_OFFSET = 120
 
 
 def set_current_color(player, qp):
@@ -29,9 +32,6 @@ def draw_stat(qp, game, width, height, factor, correction):
 
     stat = count_stat(game.field)
     max_value = max(stat)
-    LINE_WIDTH = 50
-    BETWEEN_OFFSET = 5
-    TOP_OFFSET  = 120
     max_len = height - 10 - TOP_OFFSET
     qp.setPen(Qt.black)
 

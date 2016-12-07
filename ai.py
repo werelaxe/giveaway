@@ -1,7 +1,17 @@
 from collections import defaultdict
+from copy import copy, deepcopy
 
-from logic import LEFT_PLAYER, RIGHT_PLAYER, BOTTOM_PLAYER, TOP_PLAYER, Field
-from game import Game
+from logic import LEFT_PLAYER, RIGHT_PLAYER, BOTTOM_PLAYER, TOP_PLAYER
+
+
+def get_benefit(player, start_stat, finish_stat):
+    benefit = 0
+    for index in range(4):
+        if index + 1 == player:
+            benefit += start_stat[index] - finish_stat[index]
+        else:
+            benefit -= start_stat[index] - finish_stat[index]
+    return benefit
 
 
 def count_stat(field):
@@ -18,7 +28,6 @@ def count_stat(field):
                 if cell not in stat:
                     stat[cell] = defaultdict(int)
                 stat[cell][field[curr_cell]] += 1
-
     bottom_sum = 0
     top_sum = 0
     left_sum = 0
@@ -35,7 +44,7 @@ def count_stat(field):
     return bottom_sum, left_sum, top_sum, right_sum
 
 
-def do_first_possible_step(game:Game):
+def do_first_possible_step(game):
     player = game.current_player
     field = game.field
     size = field.size
@@ -49,11 +58,43 @@ def do_first_possible_step(game:Game):
                 elif type(game.selected_cells) == list:
                     game.do_step(game.selected_cells[0])
 
-game = Game(14)
+
+def get_step_benefit(counting_game, start_cell, finish_step):
+
+    game = deepcopy(counting_game)
+    start_stat = count_stat(game.field)
+    player = game.current_player
+    game.click(start_cell)
+    game.do_step(finish_step)
+    finish_stat = count_stat(game.field)
+    return get_benefit(abs(player), start_stat, finish_stat)
 
 
+def do_smart_step(game):
+    current_player = game.current_player
+    size = game.field.size
+    field = game.field
+    possible_steps = []
+    max_benefit = -10000000000000
+    max_possible_step = (-1, -1)
+    cells = []
+    for index in range(size ** 2):
+        curr_cell = (index % size, index // size)
+        if field[curr_cell] == current_player:
+            cells.append(curr_cell)
+    for cell in cells:
+        game.click(cell)
+        if game.selected_cells:
+            possible_cells = game.selected_cells
+            for possible_cell in possible_cells:
+                possible_steps.append((cell, possible_cell))
 
-
-
-
-
+    for start_cell, finish_cell in possible_steps:
+        current_benefit = get_step_benefit(game, start_cell, finish_cell)
+        if current_benefit > max_benefit:
+            max_benefit = current_benefit
+            max_possible_step = (start_cell, finish_cell)
+    max_start_cell, max_finish_cell = max_possible_step
+    game.click(max_start_cell)
+    game.click(max_finish_cell)
+    print(max_benefit)

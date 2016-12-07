@@ -5,7 +5,8 @@ from PyQt5.QtGui import QPainter
 from game import Game
 from PyQt5.QtWidgets import QWidget, QLabel, QApplication
 from PyQt5.QtCore import QBasicTimer
-from ai import do_first_possible_step, count_stat
+from ai import do_first_possible_step, do_smart_step
+
 
 
 class Example(QWidget):
@@ -18,7 +19,6 @@ class Example(QWidget):
         self.res_height = res_height
         self.game = Game(14)
         self.factor = (res_height - 100) / self.game.field.size
-        print(self.factor)
         self.init_ui()
 
     def init_ui(self):
@@ -26,15 +26,14 @@ class Example(QWidget):
         self.setGeometry((self.res_width - height - 200) / 2,
                          100 / 2, height + 200, height)
         self.timer = QBasicTimer()
-        #self.timer.start(100, self)
+        self.timer.start(0, self)
         self.setWindowTitle('Giveaway')
         self.show()
 
     def mousePressEvent(self, event):
         x_coord = int(event.pos().x() / self.factor)
         y_coord = int(event.pos().y() / self.factor)
-        print(self.game.field.get_selected_cells_without_cut_factor(self.game.field[(x_coord, y_coord)], (x_coord, y_coord)))
-        print(self.game.field.get_cut_cells(self.game.field[(x_coord, y_coord)], (x_coord, y_coord)))
+        print(x_coord, y_coord)
         if x_coord >= self.game.field.size:
             return
         if event.button() == Qt.LeftButton:
@@ -53,11 +52,17 @@ class Example(QWidget):
         if event.key() == Qt.Key_Escape:
             self.close()
         if event.key() == Qt.Key_Control:
-            do_first_possible_step(self.game)
+            # do_first_possible_step(self.game)
+            do_smart_step(self.game)
             self.update()
 
     def timerEvent(self, e):
-        do_first_possible_step(self.game)
+        if self.game.current_player != 1:
+            do_first_possible_step(self.game)
+        else:
+            return
+        if self.game.over:
+            self.close()
         self.update()
 
     def update(self, *__args):

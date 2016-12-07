@@ -1,5 +1,8 @@
+from collections import defaultdict
+
 from logic import Field, LEFT_PLAYER, RIGHT_PLAYER, BOTTOM_PLAYER, TOP_PLAYER,\
-    EMPTY, is_final_line
+    EMPTY, is_final_line, get_name_by_id
+from ai import count_stat, get_benefit
 
 
 class Game:
@@ -8,7 +11,7 @@ class Game:
         self.current_player = BOTTOM_PLAYER
         self.selected_cells = []
         self.active_cell = None
-        self.cells_count = {LEFT_PLAYER: 0, RIGHT_PLAYER: 0, TOP_PLAYER: 0, BOTTOM_PLAYER: 0}
+        self.over = False
 
     def change_cell(self, cell):
         self.field[cell] += 1
@@ -39,12 +42,16 @@ class Game:
                 self.field[step_cell] *= -1
             self.field[self.active_cell] = EMPTY
             if type(self.selected_cells) == dict:
-                print('do cut')
+                cut_player = abs(self.field[self.selected_cells[step_cell]])
+                self.field.cells_count[cut_player] -= 1
+                if not self.field.cells_count[cut_player]:
+                    print("{} wins!".format(get_name_by_id(cut_player)))
+                    self.over = True
                 self.field[self.selected_cells[step_cell]] = EMPTY
-                if not self.field.get_cut_cells(self.field[step_cell], step_cell):
+                if not self.field.get_cut_cells(
+                        self.field[step_cell], step_cell):
                     self.change_player()
             else:
-                print('do step')
                 self.change_player()
             self.selected_cells = []
             self.active_cell = None
@@ -53,7 +60,13 @@ class Game:
         if abs(self.field[step_cell]) == abs(self.current_player):
             self.select_cell(step_cell)
         elif not self.field[step_cell]:
+            start_stat = count_stat(self.field)
+            player = self.current_player
             self.do_step(step_cell)
+            finish_stat = count_stat(self.field)
+            # print(start_stat)
+            # print(finish_stat)
+            # print(get_benefit(abs(player), start_stat, finish_stat))
 
     def update(self):
         print('Updating field: {}'.format(self))

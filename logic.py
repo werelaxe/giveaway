@@ -1,3 +1,4 @@
+from collections import defaultdict
 from itertools import product
 
 
@@ -13,6 +14,17 @@ RIGHT_DIRS[LEFT_PLAYER] = [(1, 1), (1, -1)]
 RIGHT_DIRS[TOP_PLAYER] = [(1, 1), (-1, 1)]
 RIGHT_DIRS[RIGHT_PLAYER] = [(-1, 1), (-1, -1)]
 ANY_DIRS = list(product([-1, 1], repeat=2))
+
+
+def get_name_by_id(id):
+    if id == 1:
+        return 'bottom player'
+    if id == 2:
+        return 'left player'
+    if id == 3:
+        return 'top player'
+    if id == 4:
+        return 'right player'
 
 
 def is_final_line(player, cell, field):
@@ -49,10 +61,10 @@ def cell_mul(cell, number):
 
 
 def get_start_player(coord_x, coord_y, field_size):
-    if (coord_x == 5) and (coord_y == 6):
-        return -BOTTOM_PLAYER
-    if (coord_x == 9) and (coord_y == 10):
-        return LEFT_PLAYER
+#    if (coord_x == 5) and (coord_y == 6):
+#        return -BOTTOM_PLAYER
+#   if (coord_x == 9) and (coord_y == 10):
+#        return LEFT_PLAYER
     if (coord_x + coord_y) % 2:
         if 0 <= coord_x <= 2:  # left player
             if 3 <= coord_y <= field_size - 4:
@@ -73,10 +85,14 @@ class Field:
     def __init__(self, size):
         self.cells = []
         self.size = size
+        self.cells_count = {LEFT_PLAYER: 0, RIGHT_PLAYER: 0, TOP_PLAYER: 0, BOTTOM_PLAYER: 0}
         for indy in range(size):
             self.cells.append([])
             for indx in range(size):
-                self.cells[indy].append(get_start_player(indx, indy, size))
+                next_player = get_start_player(indx, indy, size)
+                if next_player:
+                    self.cells_count[abs(next_player)] += 1
+                self.cells[indy].append(abs(next_player))
 
     def __getitem__(self, cell):
         x_coord, y_coord = cell
