@@ -4,9 +4,6 @@ import sys
 from logic import LEFT_PLAYER, RIGHT_PLAYER, BOTTOM_PLAYER, TOP_PLAYER
 
 
-
-
-
 def get_benefit(player, start_stat, finish_stat):
     benefit = 0
     for index in range(4):
@@ -58,8 +55,10 @@ def do_first_possible_step(game):
             if game.selected_cells:
                 if type(game.selected_cells) == dict:
                     game.do_step(list(game.selected_cells.keys())[0])
+                    return
                 elif type(game.selected_cells) == list:
                     game.do_step(game.selected_cells[0])
+                    return
 
 
 def get_cut_benefit(game, step_chain):
@@ -130,15 +129,15 @@ def get_states(chain, deep, global_dict, state, states_list):
 
 
 def do_smart_step(game):
-    max_benefit = -10000000000000
+    max_benefit = 10000000000000
     max_possible_step = (-1, -1)
     possible_steps = get_possible_steps(game)
     if not possible_steps:
         print("No way!")
         return
     for start_cell, finish_cell in possible_steps:
-        current_benefit = get_step_benefit(game, start_cell, finish_cell)
-        if current_benefit > max_benefit:
+        current_benefit = -get_step_benefit(game, start_cell, finish_cell)
+        if current_benefit < max_benefit:
             max_benefit = current_benefit
             max_possible_step = (start_cell, finish_cell)
     max_start_cell, max_finish_cell = max_possible_step
@@ -174,7 +173,6 @@ def do_very_smart_step(game, deep=3):
             if count == 0:
                 # print("Player {} wins!".format(player))
                 game.over = True
-                sys.exit(0)
-
-    game.click(max_step[0])
-    game.click(max_step[1])
+    if max_step is not None:
+        game.click(max_step[0])
+        game.click(max_step[1])

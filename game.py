@@ -50,7 +50,6 @@ class Game:
                 cut_player = abs(self.field[self.selected_cells[step_cell]])
                 self.field.cells_count[cut_player] -= 1
                 if not self.field.cells_count[cut_player]:
-                    print("{} wins!".format(get_name_by_id(cut_player)))
                     self.over = True
                     self.winner = get_name_by_id(cut_player)
                 self.field[self.selected_cells[step_cell]] = EMPTY
@@ -63,6 +62,8 @@ class Game:
             self.active_cell = None
 
     def click(self, step_cell):
+        if self.over:
+            return
         if abs(self.field[step_cell]) == abs(self.current_player):
             self.select_cell(step_cell)
         elif not self.field[step_cell]:

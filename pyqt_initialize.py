@@ -2,6 +2,7 @@ import sys
 
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QHBoxLayout
+from PyQt5.QtWidgets import QLineEdit
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import QPushButton
 from PyQt5 import QtWidgets
@@ -27,15 +28,16 @@ class Giveaway(QWidget):
         self.res_width = res_width
         self.timer = QBasicTimer()
         self.res_height = res_height
-        self.game = Game(12)
-        self.factor = (res_height - 100) / self.game.field.size
         self.is_waiting = False
         self.user_want_exit = False
-        # self.init_ui()
+        self.game = None
+        self.factor = -1
 
     def init_ui(self, params):
-        self.game.players = params
-        print(params)
+        self.game = Game(params[0])
+        self.factor = (self.res_height - 100) / self.game.field.size
+        self.game.players = params[1]
+
         height = self.res_height - 100
         self.setGeometry((self.res_width - height - 200) / 2,
                          100 / 2, height + 200, height)
@@ -54,7 +56,8 @@ class Giveaway(QWidget):
         if event.button() == Qt.LeftButton:
             self.game.click((x_coord, y_coord))
         if event.button() == Qt.RightButton:
-            self.game.change_cell((x_coord, y_coord))
+            # self.game.change_cell((x_coord, y_coord))
+            print(x_coord, y_coord)
         if event.button() == Qt.MiddleButton:
             pass
         self.update()
@@ -88,7 +91,6 @@ class Giveaway(QWidget):
 
         if self.game.over:
             # self.close()
-            print("Game over!")
             self.timer.stop()
         self.update()
 
@@ -98,6 +100,7 @@ class Giveaway(QWidget):
         self.repaint()
 
     def ask_closing(self, event):
+        self.timer.stop()
         reply = QMessageBox.question(self, 'Confirm closing', "Are you sure to quit?", QMessageBox.Yes | QMessageBox.No,
                                      QMessageBox.No)
         if reply == QMessageBox.Yes:
@@ -105,6 +108,7 @@ class Giveaway(QWidget):
             event.accept()
         else:
             event.ignore()
+            self.timer.start(0, self)
 
     def closeEvent(self, event):
         if not self.user_want_exit:
@@ -142,6 +146,14 @@ class StartMenu(QWidget):
         layout = QVBoxLayout()  # layout for the central widget
         widget = QWidget()  # central widget
 
+        self.size_combo = QtWidgets.QComboBox(widget)
+        for index in range(4, 21):
+            self.size_combo.addItem(str(index * 2))
+        self.size_combo.setCurrentText("14")
+        self.size_combo.setFont(QFont('SansSerif', 40))
+        self.setToolTip("Field size")
+        layout.addWidget(self.size_combo)
+
         self.first_player = QtWidgets.QComboBox(widget)
         add_field(self.first_player)
         layout.addWidget(self.first_player)
@@ -173,7 +185,8 @@ class StartMenu(QWidget):
         difficulty[1] = LABELS[self.second_player.currentText()]
         difficulty[2] = LABELS[self.third_player.currentText()]
         difficulty[3] = LABELS[self.fourth_player.currentText()]
-        self.start_event(difficulty)
+        field_size = int(self.size_combo.currentText())
+        self.start_event((field_size, difficulty))
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Escape:
