@@ -1,4 +1,14 @@
 import sys
+
+from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import QButtonGroup
+from PyQt5.QtWidgets import QGroupBox
+from PyQt5.QtWidgets import QHBoxLayout
+from PyQt5.QtWidgets import QPushButton
+from PyQt5.QtWidgets import QRadioButton
+from PyQt5.QtWidgets import QToolTip
+from PyQt5.QtWidgets import QVBoxLayout
+
 from graphics import draw_game
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter
@@ -19,7 +29,7 @@ class Giveaway(QWidget):
         self.res_height = res_height
         self.game = Game(12)
         self.factor = (res_height - 100) / self.game.field.size
-        self.init_ui()
+        # self.init_ui()
 
     def init_ui(self):
         height = self.res_height - 100
@@ -76,9 +86,30 @@ class Giveaway(QWidget):
         self.repaint()
 
 
+def add_player(layout, player, menu):
+    easy = QRadioButton("easy", menu)
+    player.addButton(easy)
+
+    medium = QRadioButton("medium", menu)
+    player.addButton(medium)
+
+    hard = QRadioButton("hard", menu)
+    player.addButton(hard)
+
+    human = QRadioButton("human", menu)
+    player.addButton(human)
+
+    layout.addWidget(easy)
+    layout.addWidget(medium)
+    layout.addWidget(hard)
+    layout.addWidget(human)
+    easy.setChecked(True)
+
+
 class StartMenu(QWidget):
     def __init__(self, resolution):
         super().__init__()
+        self.resolution = resolution
         res_width, res_height = resolution.width(), resolution.height()
         self.res_width = res_width
         self.res_height = res_height
@@ -88,10 +119,28 @@ class StartMenu(QWidget):
         height = self.res_height - 100
         self.setGeometry((self.res_width - height - 200) / 2,
                          100 / 2, height + 200, height)
+        btn = QPushButton('Start game', self)
+        btn.setFont(QFont('SansSerif', 20))
+        btn.resize(btn.sizeHint())
+
+        layout = QVBoxLayout()  # layout for the central widget
+        widget = QWidget()  # central widget
+        widget.setLayout(layout)
+
+        first_player = QButtonGroup(widget)
+        add_player(layout, first_player, self)
+
+        second_player = QButtonGroup(widget)
+        add_player(layout, second_player, self)
+
+        third_player = QButtonGroup(widget)
+        add_player(layout, third_player, self)
+        layout.addWidget(btn)
+        self.setLayout(layout)
         self.setWindowTitle('Giveaway')
         self.show()
 
-    def mousePressEvent(self, event):
+    def closeEvent(self, evnt):
         pass
 
     def keyPressEvent(self, event):
@@ -102,6 +151,7 @@ class StartMenu(QWidget):
 def new_game():
     app = QApplication(sys.argv)
     resolution = app.desktop().screenGeometry()
+    p = 0
     menu = StartMenu(resolution)
 
     # form = Giveaway(resolution)
