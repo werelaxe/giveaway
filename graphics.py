@@ -12,7 +12,7 @@ LIGHT_BROWN = QColor(255, 209, 71)
 LINE_WIDTH = 50
 BETWEEN_OFFSET = 5
 TOP_OFFSET = 150
-LABELS = {0: "easy", 1: "medium", 2: "hard", 3: "human"}
+LABELS = {0: "easy", 1: "mid", 2: "hard", 3: "human"}
 
 
 def set_current_color(player, qp):

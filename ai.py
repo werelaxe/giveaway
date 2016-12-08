@@ -169,8 +169,12 @@ def do_very_smart_step(game, deep=3):
             max_step = step
 
     if max_step is None:
+        do_first_possible_step(game)
         for player, count in game.field.cells_count.items():
             if count == 0:
-                print("Player {} wins!".format(player))
+                # print("Player {} wins!".format(player))
+                game.over = True
+                sys.exit(0)
+
     game.click(max_step[0])
     game.click(max_step[1])

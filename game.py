@@ -12,6 +12,7 @@ class Game:
         self.selected_cells = []
         self.active_cell = None
         self.over = False
+        self.winner = None
         self.players = [0] * 0
 
     def change_cell(self, cell):
@@ -49,9 +50,9 @@ class Game:
                 cut_player = abs(self.field[self.selected_cells[step_cell]])
                 self.field.cells_count[cut_player] -= 1
                 if not self.field.cells_count[cut_player]:
-                    pass
-                    # print("{} wins!".format(get_name_by_id(cut_player)))
+                    print("{} wins!".format(get_name_by_id(cut_player)))
                     self.over = True
+                    self.winner = get_name_by_id(cut_player)
                 self.field[self.selected_cells[step_cell]] = EMPTY
                 if not self.field.get_cut_cells(
                         self.field[step_cell], step_cell):

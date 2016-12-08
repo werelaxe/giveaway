@@ -2,6 +2,7 @@ import sys
 
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QHBoxLayout
+from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import QPushButton
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QStyle
@@ -29,6 +30,7 @@ class Giveaway(QWidget):
         self.game = Game(12)
         self.factor = (res_height - 100) / self.game.field.size
         self.is_waiting = False
+        self.user_want_exit = False
         # self.init_ui()
 
     def init_ui(self, params):
@@ -43,7 +45,7 @@ class Giveaway(QWidget):
         self.show()
 
     def mousePressEvent(self, event):
-        if not self.is_waiting:
+        if not self.is_waiting or self.game.over:
             return
         x_coord = int(event.pos().x() / self.factor)
         y_coord = int(event.pos().y() / self.factor)
@@ -69,7 +71,7 @@ class Giveaway(QWidget):
         if event.key() == Qt.Key_Control:
             # do_first_possible_step(self.game)
             # do_smart_step(self.game)
-            do_very_smart_step(self.game)
+            #do_very_smart_step(self.game)
             self.update()
         if event.key() == Qt.Key_Space:
             pass
@@ -91,10 +93,22 @@ class Giveaway(QWidget):
         self.update()
 
     def update(self, *__args):
+        if self.game.over:
+            QMessageBox.question(self, 'GAME OVER', "{} wins!".format(self.game.winner), QMessageBox.Ok)
         self.repaint()
 
+    def ask_closing(self, event):
+        reply = QMessageBox.question(self, 'Confirm closing', "Are you sure to quit?", QMessageBox.Yes | QMessageBox.No,
+                                     QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            self.user_want_exit = True
+            event.accept()
+        else:
+            event.ignore()
+
     def closeEvent(self, event):
-        self.close()
+        if not self.user_want_exit:
+            self.ask_closing(event)
 
 
 def add_field(player_combo_box):

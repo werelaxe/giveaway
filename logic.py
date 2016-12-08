@@ -18,13 +18,13 @@ ANY_DIRS = list(product([-1, 1], repeat=2))
 
 def get_name_by_id(id):
     if id == 1:
-        return 'bottom player'
+        return 'red'
     if id == 2:
-        return 'left player'
+        return 'green'
     if id == 3:
-        return 'top player'
+        return 'blue'
     if id == 4:
-        return 'right player'
+        return 'yellow'
 
 
 def is_final_line(player, cell, field):
