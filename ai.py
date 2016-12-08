@@ -1,6 +1,5 @@
 from collections import defaultdict
-from copy import copy, deepcopy
-import sys
+from copy import deepcopy
 from logic import LEFT_PLAYER, RIGHT_PLAYER, BOTTOM_PLAYER, TOP_PLAYER
 
 
@@ -20,7 +19,8 @@ def count_stat(field):
     for index in range(size ** 2):
         curr_cell = (index % size, index // size)
         if field[curr_cell]:
-            for cell in field.get_selected_cells_without_cut_factor(field[curr_cell], curr_cell):
+            for cell in field.get_selected_cells_without_cut_factor(
+                    field[curr_cell], curr_cell):
                 if cell not in stat:
                     stat[cell] = defaultdict(int)
                 stat[cell][field[curr_cell]] += 1
@@ -66,12 +66,11 @@ def get_cut_benefit(game, step_chain):
     current_player = deepcopy(copy_game.current_player)
     start_cells_count = deepcopy(copy_game.field.cells_count)
     for step in step_chain:
-        # print("select cells")
         copy_game.click(step[0])
-        # print("do step")
         copy_game.click(step[1])
     finish_cells_count = copy_game.field.cells_count
-    return start_cells_count[current_player] - finish_cells_count[current_player]
+    return start_cells_count[current_player] -\
+        finish_cells_count[current_player]
 
 
 def get_step_benefit(counting_game, start_cell, finish_step):
@@ -112,7 +111,9 @@ def get_steps_chain(game, steps, deep, max_deep):
         copy_game = deepcopy(game)
         copy_game.click(step[0])
         copy_game.click(step[1])
-        result.append((step, get_steps_chain(copy_game, get_possible_steps(copy_game), deep + 1, max_deep)))
+        pos_steps = get_possible_steps(copy_game)
+        chain = get_steps_chain(copy_game, pos_steps, deep + 1, max_deep)
+        result.append((step, chain))
     return result
 
 
@@ -122,7 +123,8 @@ def get_states(chain, deep, global_dict, state, states_list):
         global_dict[element[0]] = {}
         if element[1] != 'end':
             # print("    " * deep)
-            get_states(element[1], deep + 1, global_dict[element[0]], state + [element[0]], states_list)
+            get_states(element[1], deep + 1, global_dict[element[0]],
+                       state + [element[0]], states_list)
         else:
             if state not in states_list:
                 states_list.append(state)
@@ -171,7 +173,6 @@ def do_very_smart_step(game, deep=3):
         do_first_possible_step(game)
         for player, count in game.field.cells_count.items():
             if count == 0:
-                # print("Player {} wins!".format(player))
                 game.over = True
     if max_step is not None:
         game.click(max_step[0])

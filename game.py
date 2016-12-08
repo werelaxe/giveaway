@@ -1,8 +1,5 @@
-from collections import defaultdict
 from random import randint
-from logic import Field, LEFT_PLAYER, RIGHT_PLAYER, BOTTOM_PLAYER, TOP_PLAYER,\
-    EMPTY, is_final_line, get_name_by_id
-from ai import count_stat, get_benefit
+from logic import Field, EMPTY, is_final_line, get_name_by_id
 
 
 class Game:
@@ -21,7 +18,8 @@ class Game:
             self.field[cell] = -4
 
     def select_cell(self, step_cell):
-        selected_cells = self.field.get_selected_cells(self.field[step_cell], step_cell)
+        selected_cells = self.field.get_selected_cells(
+            self.field[step_cell], step_cell)
         cut_cells = self.field.get_cut_cells(self.field[step_cell], step_cell)
         if cut_cells:
             self.selected_cells = cut_cells

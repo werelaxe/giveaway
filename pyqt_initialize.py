@@ -1,14 +1,9 @@
 import sys
-
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QHBoxLayout
-from PyQt5.QtWidgets import QLineEdit
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import QPushButton
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QStyle
 from PyQt5.QtWidgets import QVBoxLayout
-
 from graphics import draw_game
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter
@@ -16,7 +11,6 @@ from game import Game
 from PyQt5.QtWidgets import QWidget, QLabel, QApplication
 from PyQt5.QtCore import QBasicTimer
 from ai import do_first_possible_step, do_smart_step, do_very_smart_step
-import ai
 
 LABELS = {"CPU easy": 0, "CPU medium": 1, "CPU hard": 2, "human": 3}
 
@@ -71,13 +65,6 @@ class Giveaway(QWidget):
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Escape:
             self.close()
-        if event.key() == Qt.Key_Control:
-            # do_first_possible_step(self.game)
-            # do_smart_step(self.game)
-            #do_very_smart_step(self.game)
-            self.update()
-        if event.key() == Qt.Key_Space:
-            pass
 
     def timerEvent(self, e):
         if self.game.players[self.game.current_player - 1] == 0:
@@ -96,13 +83,15 @@ class Giveaway(QWidget):
 
     def update(self, *__args):
         if self.game.over:
-            QMessageBox.question(self, 'GAME OVER', "{} wins!".format(self.game.winner), QMessageBox.Ok)
+            QMessageBox.question(self, 'GAME OVER', "{} wins!".format(
+                self.game.winner), QMessageBox.Ok)
         self.repaint()
 
     def ask_closing(self, event):
         self.timer.stop()
-        reply = QMessageBox.question(self, 'Confirm closing', "Are you sure to quit?", QMessageBox.Yes | QMessageBox.No,
-                                     QMessageBox.No)
+        reply = QMessageBox.question(
+            self, 'Confirm closing', "Are you sure to quit?",
+            QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
         if reply == QMessageBox.Yes:
             self.user_want_exit = True
             event.accept()
@@ -162,7 +151,7 @@ class StartMenu(QWidget):
         add_field(self.second_player)
         layout.addWidget(self.second_player)
 
-        self.third_player= QtWidgets.QComboBox(widget)
+        self.third_player = QtWidgets.QComboBox(widget)
         add_field(self.third_player)
         layout.addWidget(self.third_player)
 
@@ -172,7 +161,6 @@ class StartMenu(QWidget):
 
         layout.addWidget(btn)
         widget.setLayout(layout)
-
 
         self.setLayout(layout)
         self.setWindowTitle('Giveaway')
@@ -199,4 +187,3 @@ def new_game():
     form = Giveaway(resolution)
     menu = StartMenu(resolution, form.init_ui)
     sys.exit(app.exec_())
-

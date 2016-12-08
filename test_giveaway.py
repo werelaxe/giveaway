@@ -1,6 +1,5 @@
 import unittest
 from collections import defaultdict
-
 import logic
 from random import randint
 import game
@@ -114,7 +113,8 @@ class Testing(unittest.TestCase):
         for index in range(self.size ** 2):
             curr_cell = (index % self.size, index // self.size)
             if field[curr_cell]:
-                for cell in field.get_selected_cells_without_cut_factor(field[curr_cell], curr_cell):
+                for cell in field.get_selected_cells_without_cut_factor(
+                        field[curr_cell], curr_cell):
                     if cell not in stat:
                         stat[cell] = defaultdict(int)
                     stat[cell][field[curr_cell]] += 1
@@ -165,5 +165,5 @@ class Testing(unittest.TestCase):
                 ai.do_first_possible_step(test_game)
             else:
                 ai.do_very_smart_step(test_game)
-        self.assertTrue(test_game.winner == "blue"
-                        or test_game.winner == "yellow")
+        self.assertTrue(test_game.winner == "blue" or
+                        test_game.winner == "yellow")

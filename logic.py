@@ -1,4 +1,3 @@
-from collections import defaultdict
 from itertools import product
 
 
@@ -81,7 +80,8 @@ class Field:
     def __init__(self, size):
         self.cells = []
         self.size = size
-        self.cells_count = {LEFT_PLAYER: 0, RIGHT_PLAYER: 0, TOP_PLAYER: 0, BOTTOM_PLAYER: 0}
+        self.cells_count = {LEFT_PLAYER: 0, RIGHT_PLAYER: 0,
+                            TOP_PLAYER: 0, BOTTOM_PLAYER: 0}
         for indy in range(size):
             self.cells.append([])
             for indx in range(size):
@@ -129,9 +129,9 @@ class Field:
         else:  # it's a king (pain)
             for direction in ANY_DIRS:
                 for index in range(1, self.size):
-                    if self.is_inside(cell_sum(start_cell, cell_mul(direction, index))) and \
-                            not self[cell_sum(start_cell, cell_mul(direction, index))]:
-                        selected_cells.append((cell_sum(start_cell, cell_mul(direction, index))))
+                    cell = cell_sum(start_cell, cell_mul(direction, index))
+                    if self.is_inside(cell) and not self[cell]:
+                        selected_cells.append(cell)
                     else:
                         break
         return selected_cells
@@ -147,19 +147,20 @@ class Field:
         cut_cells = {}
         if player > 0:
             for right_dir in ANY_DIRS:
-                if not self.is_inside(cell_sum(start_cell, cell_mul(right_dir, 2))):
+                cell = cell_sum(start_cell, cell_mul(right_dir, 2))
+                if not self.is_inside(cell):
                     continue
-                if self[cell_sum(start_cell, cell_mul(right_dir, 2))] == EMPTY and \
-                                abs(self[cell_sum(start_cell, right_dir)]) != abs(player) and \
-                        self[cell_sum(start_cell, right_dir)]:
-                    cut_cells[cell_sum(start_cell, cell_mul(right_dir, 2))] = \
-                        cell_sum(start_cell, right_dir)
+                offset = cell_sum(start_cell, right_dir)
+                if self[cell] == EMPTY and abs(self[offset]) != abs(player)\
+                        and self[offset]:
+                    cut_cells[cell] = offset
         if player < 0:
             for direction in ANY_DIRS:
                 enemy_met = False
                 enemy = None
                 for index in range(1, self.size):
-                    curr_cell = cell_sum(start_cell, cell_mul(direction, index))
+                    curr_cell = cell_sum(start_cell,
+                                         cell_mul(direction, index))
                     if not self.is_inside(curr_cell):
                         break
                     if abs(self[curr_cell]) == abs(player):
