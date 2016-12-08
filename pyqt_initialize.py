@@ -8,7 +8,7 @@ from graphics import draw_game
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter
 from game import Game
-from PyQt5.QtWidgets import QWidget, QLabel, QApplication
+from PyQt5.QtWidgets import QWidget, QApplication
 from PyQt5.QtCore import QBasicTimer
 from ai import do_first_possible_step, do_smart_step, do_very_smart_step
 
@@ -186,4 +186,6 @@ def new_game():
     resolution = app.desktop().screenGeometry()
     form = Giveaway(resolution)
     menu = StartMenu(resolution, form.init_ui)
+    if menu == 1:
+        pass
     sys.exit(app.exec_())

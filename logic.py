@@ -141,37 +141,45 @@ class Field:
             return []
         return self.get_selected_cells_without_cut_factor(player, start_cell)
 
+    def _get_cut_cells(self, player, start_cell):
+        cut_cells = {}
+        for right_dir in ANY_DIRS:
+            cell = cell_sum(start_cell, cell_mul(right_dir, 2))
+            if not self.is_inside(cell):
+                continue
+            offset = cell_sum(start_cell, right_dir)
+            if self[cell] == EMPTY and abs(self[offset]) != abs(player)\
+                    and self[offset]:
+                cut_cells[cell] = offset
+        return cut_cells
+
+    def _get_cut_cells_for_kings(self, player, start_cell):
+        cut_cells = {}
+        for direction in ANY_DIRS:
+            enemy_met = False
+            enemy = None
+            for index in range(1, self.size):
+                curr_cell = cell_sum(start_cell,
+                                     cell_mul(direction, index))
+                if not self.is_inside(curr_cell):
+                    break
+                if abs(self[curr_cell]) == abs(player):
+                    break
+                if self[curr_cell]:
+                    if not enemy_met:
+                        enemy_met = True
+                        enemy = curr_cell
+                    else:
+                        break
+                else:
+                    if enemy_met:
+                        cut_cells[curr_cell] = enemy
+        return cut_cells
+
     def get_cut_cells(self, player, start_cell):
         if abs(self[start_cell]) != abs(player):
             return {}
-        cut_cells = {}
         if player > 0:
-            for right_dir in ANY_DIRS:
-                cell = cell_sum(start_cell, cell_mul(right_dir, 2))
-                if not self.is_inside(cell):
-                    continue
-                offset = cell_sum(start_cell, right_dir)
-                if self[cell] == EMPTY and abs(self[offset]) != abs(player)\
-                        and self[offset]:
-                    cut_cells[cell] = offset
+            return self._get_cut_cells(player, start_cell)
         if player < 0:
-            for direction in ANY_DIRS:
-                enemy_met = False
-                enemy = None
-                for index in range(1, self.size):
-                    curr_cell = cell_sum(start_cell,
-                                         cell_mul(direction, index))
-                    if not self.is_inside(curr_cell):
-                        break
-                    if abs(self[curr_cell]) == abs(player):
-                        break
-                    if self[curr_cell]:
-                        if not enemy_met:
-                            enemy_met = True
-                            enemy = curr_cell
-                        else:
-                            break
-                    else:
-                        if enemy_met:
-                            cut_cells[curr_cell] = enemy
-        return cut_cells
+            return self._get_cut_cells_for_kings(player, start_cell)
