@@ -11,7 +11,8 @@ DARK_BROWN = QColor(150, 53, 0)
 LIGHT_BROWN = QColor(255, 209, 71)
 LINE_WIDTH = 50
 BETWEEN_OFFSET = 5
-TOP_OFFSET = 120
+TOP_OFFSET = 150
+LABELS = {0: "easy", 1: "medium", 2: "hard", 3: "human"}
 
 
 def set_current_color(player, qp):
@@ -29,6 +30,13 @@ def draw_stat(qp, game, width, height, factor, correction):
     qp.setPen(LIGHT_BROWN)
     qp.setFont(QFont('Times new roman', 25))
     qp.drawText(height - 20, 60, 200, 60, Qt.AlignCenter, "Statistics:")
+
+    qp.setFont(QFont('Times new roman', 12))
+
+    for index in range(4):
+        player = game.players[index]
+        label = LABELS[player]
+        qp.drawText(height - 75 + index * 50, 105, 200, 60, Qt.AlignCenter, label)
 
     cell_count = game.field.cells_count
     completeness = count_stat(game.field)

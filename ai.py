@@ -1,9 +1,10 @@
 from collections import defaultdict
 from copy import copy, deepcopy
-
 import sys
-
 from logic import LEFT_PLAYER, RIGHT_PLAYER, BOTTOM_PLAYER, TOP_PLAYER
+
+
+
 
 
 def get_benefit(player, start_stat, finish_stat):
@@ -168,6 +169,8 @@ def do_very_smart_step(game, deep=3):
             max_step = step
 
     if max_step is None:
-        sys.exit(0)
+        for player, count in game.field.cells_count.items():
+            if count == 0:
+                print("Player {} wins!".format(player))
     game.click(max_step[0])
     game.click(max_step[1])

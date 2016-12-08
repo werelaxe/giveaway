@@ -12,6 +12,7 @@ class Game:
         self.selected_cells = []
         self.active_cell = None
         self.over = False
+        self.players = [0] * 0
 
     def change_cell(self, cell):
         self.field[cell] += 1
