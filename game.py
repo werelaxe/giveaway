@@ -1,5 +1,6 @@
 from random import randint
-from logic import Field, EMPTY, is_final_line, get_name_by_id
+from logic import Field, EMPTY, is_final_line,\
+    get_name_by_id, get_possible_steps
 
 
 class Game:
@@ -39,7 +40,6 @@ class Game:
 
     def do_step(self, step_cell):
         if step_cell in self.selected_cells:
-            # print("step was successfully done")
             self.field[step_cell] = self.field[self.active_cell]
             if is_final_line(abs(self.current_player), step_cell, self.field):
                 self.field[step_cell] = -abs(self.field[step_cell])
@@ -66,3 +66,8 @@ class Game:
             self.select_cell(step_cell)
         elif not self.field[step_cell]:
             self.do_step(step_cell)
+            if not get_possible_steps(self):
+                self.over = True
+
+
+

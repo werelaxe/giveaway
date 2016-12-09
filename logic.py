@@ -1,5 +1,6 @@
 from itertools import product
 
+from copy import deepcopy
 
 EMPTY = 0
 BOTTOM_PLAYER = 1
@@ -24,6 +25,26 @@ def get_name_by_id(id):
         return 'blue'
     if id == 4:
         return 'yellow'
+
+
+def get_possible_steps(copy_game):
+    game = deepcopy(copy_game)
+    current_player = game.current_player
+    size = game.field.size
+    field = game.field
+    possible_steps = []
+    cells = []
+    for index in range(size ** 2):
+        curr_cell = (index % size, index // size)
+        if abs(field[curr_cell]) == abs(current_player):
+            cells.append(curr_cell)
+    for cell in cells:
+        game.click(cell)
+        if game.selected_cells:
+            possible_cells = game.selected_cells
+            for possible_cell in possible_cells:
+                possible_steps.append((cell, possible_cell))
+    return possible_steps
 
 
 def is_final_line(player, cell, field):

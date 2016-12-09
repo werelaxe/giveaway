@@ -50,7 +50,7 @@ class Giveaway(QWidget):
         if event.button() == Qt.LeftButton:
             self.game.click((x_coord, y_coord))
         if event.button() == Qt.RightButton:
-            # self.game.change_cell((x_coord, y_coord))
+            self.game.change_cell((x_coord, y_coord))
             print(x_coord, y_coord)
         if event.button() == Qt.MiddleButton:
             pass
@@ -65,6 +65,8 @@ class Giveaway(QWidget):
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Escape:
             self.close()
+        if event.key() == Qt.Key_Control:
+            do_first_possible_step(self.game)
 
     def timerEvent(self, e):
         if self.game.players[self.game.current_player - 1] == 0:
@@ -83,8 +85,12 @@ class Giveaway(QWidget):
 
     def update(self, *__args):
         if self.game.over:
-            QMessageBox.question(self, 'GAME OVER', "{} wins!".format(
-                self.game.winner), QMessageBox.Ok)
+            if self.game.winner is not None:
+                QMessageBox.question(self, 'GAME OVER', "{} wins!".format(
+                    self.game.winner), QMessageBox.Ok)
+            else:
+                QMessageBox.question(self, 'GAME OVER',
+                                     "Draw!", QMessageBox.Ok)
         self.repaint()
 
     def ask_closing(self, event):
